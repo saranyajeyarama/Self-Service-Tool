@@ -1,1 +1,1 @@
-# MARS-Self_service_tool
+# SCM-Self_service_tool
