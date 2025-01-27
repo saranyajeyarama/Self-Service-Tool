@@ -59,3 +59,4 @@ def render_dashboard():
     render_action_cards()
     render_footer_nav()
     st.markdown('</div>', unsafe_allow_html=True)
+    

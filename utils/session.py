@@ -7,3 +7,4 @@ def initialize_session_state():
     #     st.session_state.show_modal = True
     # if 'show_create_market' not in st.session_state:
     #     st.session_state.show_create_market = False
+    

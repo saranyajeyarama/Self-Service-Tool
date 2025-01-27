@@ -17,17 +17,17 @@ initialize_session_state()
 init_auth()
 
 # Handle SSO callback
-query_params = st.experimental_get_query_params()
+query_params = st.query_params
 if 'code' in query_params and 'state' in query_params:
     # Verify state parameter
-    if query_params['state'][0] == st.session_state.get('state', ''):
+    if query_params.get('state') == st.session_state.get('state', ''):
         # Process authentication code
-        result = st.session_state.auth.process_auth_code(query_params['code'][0])
+        result = st.session_state.auth.process_auth_code(query_params.get('code'))
         if result and 'access_token' in result:
             st.session_state.user = result.get('id_token_claims')
             st.session_state.logged_in = True
             # Clear query parameters
-            st.experimental_set_query_params()
+            st.query_params.clear()
             st.rerun()
     else:
         st.error('Invalid state parameter. Please try logging in again.')
@@ -42,3 +42,4 @@ else:
     render_header()
     render_dashboard()
     # render_market_modal()
+    

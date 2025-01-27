@@ -55,4 +55,4 @@ def init_auth():
     if 'auth' not in st.session_state:
         st.session_state.auth = AzureADAuth()
     if 'user' not in st.session_state:
-        st.session_state.user = None        
+        st.session_state.user = None

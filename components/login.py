@@ -81,18 +81,18 @@ def render_login():
                     # Generate state parameter for security
                     st.session_state.state = str(uuid.uuid4())
                     # Get authorization URL and redirect
-                    auth_url = st.session_state.auth.get_auth_url()
-                    st.experimental_set_query_params(
-                        response_type="code",
-                        state=st.session_state.state
-                    )
+                    auth_url = st.session_state.auth.get_auth_url() 
+                    st.query_params.update({
+                        "response_type": "code",
+                        "state": st.session_state.state
+                    })
                     st.markdown(f'<meta http-equiv="refresh" content="0;url={auth_url}">', unsafe_allow_html=True)
 
     # Set background color for the entire page
     st.markdown("""
         <style>
             .stApp {
-                background-color: #00009E;
+                background-color: #daecf3;
             }
             
             [data-testid="stButton"] button {
@@ -108,3 +108,4 @@ def render_login():
             }
         </style>
     """, unsafe_allow_html=True)
+    
