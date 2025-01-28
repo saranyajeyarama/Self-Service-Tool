@@ -61,7 +61,7 @@ else:
         st.write("Saved placements list will be implemented here")
     # elif current_page == 'compare-placement':
     #     st.title("Compare Placement")
-        st.write("Placement comparison interface will be implemented here")
+        # st.write("Placement comparison interface will be implemented here")
     elif current_page == 'scm-scorecard':
         st.title("SCM Scorecard")
         st.write("SCM scorecard interface will be implemented here")
