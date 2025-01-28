@@ -4,8 +4,8 @@ A Streamlit-based analytical tool that enables users to generate and share SCM s
 
 ## 🚀 Features
 
-- Single Sign-On (SSO) Authentication with Azure AD
-- Interactive Dashboard
+- Azure AD Single Sign-On (SSO) Authentication
+- Interactive Dashboard with Sidebar Navigation
 - Market Selection and Management
 - SCM Scorecard Generation
 - Data Management and Analysis
@@ -18,7 +18,7 @@ A Streamlit-based analytical tool that enables users to generate and share SCM s
 │   ├── dashboard.py      # Dashboard view
 │   ├── header.py         # Application header
 │   ├── login.py          # SSO login interface
-│   └── market_modal.py   # Market selection modal
+│   └── sidebar.py        # Navigation sidebar
 ├── utils/               # Utility functions
 │   ├── auth.py          # Authentication handling
 │   ├── session.py       # Session state management
@@ -36,13 +36,11 @@ pip install -r requirements.txt
 ```
 
 2. Configure Azure AD:
-   - Create an Azure AD application
    - Set up the following environment variables in `.env`:
      ```
      AZURE_CLIENT_ID=your_client_id
-     AZURE_CLIENT_SECRET=your_client_secret
      AZURE_TENANT_ID=your_tenant_id
-     REDIRECT_PATH=/callback
+     REDIRECT_PATH=your_redirect_url
      ```
 
 3. Run the application:
@@ -71,13 +69,6 @@ graph TD
     B -->|Yes| H
 ```
 
-1. User clicks "Single sign on" button
-2. Generates secure state parameter
-3. Redirects to Azure AD login
-4. Processes authentication callback
-5. Validates state parameter
-6. Sets user session
-
 ### 3. Component Structure
 
 #### Login Component (`components/login.py`)
@@ -88,24 +79,20 @@ graph TD
 #### Dashboard Component (`components/dashboard.py`)
 - Welcome section
 - Data management card
-- Action cards for:
-  - Data Overview
-  - SCM Placements
-  - SCM Scorecard
+- Action cards for various features
 - Footer navigation
 
-#### Market Modal (`components/market_modal.py`)
-- Market selection interface
-- Create new market functionality
-- Market grid display
+#### Sidebar Component (`components/sidebar.py`)
+- Market selection dropdown
+- Navigation menu with icons
+- Dynamic page routing
 
 ### 4. Session State Management
 ```python
 session_state = {
     'logged_in': bool,      # Authentication status
     'user': dict,           # User information
-    'show_modal': bool,     # Market modal visibility
-    'show_create_market': bool  # Create market modal visibility
+    'current_page': str     # Current active page
 }
 ```
 
@@ -121,8 +108,9 @@ session_state = {
 
 1. Azure AD Integration
    - OAuth 2.0 authorization code flow
-   - Secure token handling
+   - Public client authentication
    - State parameter validation
+   - Secure token handling
 
 2. Session Management
    - Secure session state
@@ -132,19 +120,19 @@ session_state = {
 ## 🎨 UI/UX Features
 
 1. Responsive Layout
-   - Centered content
-   - Grid-based card system
-   - Modal overlays
+   - Fixed sidebar navigation
+   - Centered content area
+   - Clean card-based design
 
 2. Interactive Elements
+   - Active state indicators
    - Hover effects
    - Clear call-to-action buttons
-   - Loading states
 
 3. Consistent Branding
    - MARS logo and colors
    - Professional typography
-   - Clean, modern design
+   - Modern, enterprise design
 
 ## 🔜 Next Steps
 
@@ -153,3 +141,5 @@ session_state = {
 - [ ] Create scorecard generation
 - [ ] Add user management
 - [ ] Implement data visualization
+- [ ] Add market comparison features
+- [ ] Enhance data overview analytics
