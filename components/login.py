@@ -6,6 +6,10 @@ def render_login():
     # Initialize authentication
     init_auth()
     
+    # Ensure session state is initialized properly
+    if "auth" not in st.session_state:
+        st.session_state.auth = None
+
     # Center the content using columns
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -78,15 +82,22 @@ def render_login():
             btn_col1, btn_col2, btn_col3 = st.columns([1, 2, 1])
             with btn_col2:
                 if st.button("Single sign on", key="sso-login", type="primary", use_container_width=True):
-                    # Generate state parameter for security
-                    st.session_state.state = str(uuid.uuid4())
-                    # Get authorization URL and redirect
-                    auth_url = st.session_state.auth.get_auth_url() 
-                    st.query_params.update({
-                        "response_type": "code",
-                        "state": st.session_state.state
-                    })
-                    st.markdown(f'<meta http-equiv="refresh" content="0;url={auth_url}">', unsafe_allow_html=True)
+                    try:
+                        # Generate state parameter for security
+                        st.session_state.state = str(uuid.uuid4())
+
+                        # Get authorization URL and redirect
+                        auth_url = st.session_state.auth.get_auth_url()
+                        if auth_url:
+                            st.query_params.update({
+                                "response_type": "code",
+                                "state": st.session_state.state
+                            })
+                            st.markdown(f'<meta http-equiv="refresh" content="0;url={auth_url}">', unsafe_allow_html=True)
+                        else:
+                            st.error("Failed to retrieve authentication URL. Please try again.")
+                    except Exception as e:
+                        st.error(f"Authentication Error: {e}")
 
     # Set background color for the entire page
     st.markdown("""
@@ -108,4 +119,3 @@ def render_login():
             }
         </style>
     """, unsafe_allow_html=True)
-    
