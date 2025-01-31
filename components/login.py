@@ -6,6 +6,10 @@ def render_login():
     # Initialize authentication
     init_auth()
     
+    # Ensure session state is initialized properly
+    if "auth" not in st.session_state:
+        st.session_state.auth = None
+
     # Center the content using columns
     col1, col2, col3 = st.columns([1, 2, 1])
     
@@ -17,6 +21,38 @@ def render_login():
                 border-radius: 6px;
                 padding: 2rem;
                 box-shadow: 0px 2px 10px rgba(0, 0, 160, 0.16);
+            }
+            .login-title {
+                text-align: center;
+                color: #393939;
+                font-size: 24px;
+                margin: 2rem 0;
+                font-weight: bold;
+            }
+            .login-subtitle {
+                text-align: center;
+                color: #393939;
+                font-size: 18px;
+                margin-bottom: 3rem;
+            }
+            .sso-button {
+                background-color: #0033A0;
+                color: white;
+                font-weight: bold;
+                padding: 0.75rem 1.5rem;
+                border-radius: 4px;
+                border: none;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+                display: block;
+                width: 100%;
+                text-align: center;
+            }
+            .sso-button:hover {
+                background-color: #002080;
+            }
+            .stApp {
+                background-color: #daecf3;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -55,57 +91,26 @@ def render_login():
             st.markdown("<br>", unsafe_allow_html=True)
             
             # Title and subtitle
-            st.markdown("""
-                <h1 style='
-                    text-align: center;
-                    color: #393939;
-                    font-size: 24px;
-                    margin: 2rem 0;
-                '>
-                    SCM Scorecard
-                </h1>
-                <h2 style='
-                    text-align: center;
-                    color: #393939;
-                    font-size: 18px;
-                    margin-bottom: 3rem;
-                '>
-                    Self Service Tool
-                </h2>
-            """, unsafe_allow_html=True)
+            st.markdown("<h1 class='login-title'>SCM Scorecard</h1>", unsafe_allow_html=True)
+            st.markdown("<h2 class='login-subtitle'>Self Service Tool</h2>", unsafe_allow_html=True)
             
             # Center the button using columns
             btn_col1, btn_col2, btn_col3 = st.columns([1, 2, 1])
             with btn_col2:
-                if st.button("Single sign on", key="sso-login", type="primary", use_container_width=True):
-                    # Generate state parameter for security
-                    st.session_state.state = str(uuid.uuid4())
-                    # Get authorization URL and redirect
-                    auth_url = st.session_state.auth.get_auth_url() 
-                    st.query_params.update({
-                        "response_type": "code",
-                        "state": st.session_state.state
-                    })
-                    st.markdown(f'<meta http-equiv="refresh" content="0;url={auth_url}">', unsafe_allow_html=True)
+                if st.button("Single Sign On", key="sso-login", use_container_width=True):
+                    try:
+                        # Generate state parameter for security
+                        st.session_state.state = str(uuid.uuid4())
 
-    # Set background color for the entire page
-    st.markdown("""
-        <style>
-            .stApp {
-                background-color: #daecf3;
-            }
-            
-            [data-testid="stButton"] button {
-                background-color: #0000A0;
-                color: white;
-                font-weight: bold;
-                padding: 0.75rem 1.5rem;
-                border-radius: 4px;
-            }
-            
-            [data-testid="stButton"] button:hover {
-                background-color: #000080;
-            }
-        </style>
-    """, unsafe_allow_html=True)
-    
+                        # Get authorization URL and redirect
+                        auth_url = st.session_state.auth.get_auth_url()
+                        if auth_url:
+                            st.query_params.update({
+                                "response_type": "code",
+                                "state": st.session_state.state
+                            })
+                            st.markdown(f'<meta http-equiv="refresh" content="0;url={auth_url}">', unsafe_allow_html=True)
+                        else:
+                            st.error("Failed to retrieve authentication URL. Please try again.")
+                    except Exception as e:
+                        st.error(f"Authentication Error: {e}")
