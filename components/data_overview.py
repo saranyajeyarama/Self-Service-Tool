@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import os
 
 def render_data_overview():
     st.markdown("""
@@ -61,6 +62,7 @@ def render_data_overview():
         .styled-table th {
             background-color: #0033A0;
             color: white;
+            text-align: center;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -103,44 +105,39 @@ def render_data_overview():
         with col3:
             retailer = st.selectbox("Retailer", ["All", "Retailer A", "Retailer B", "Retailer C"])
         
-        # Sample DataFrame for Table Representation
-        data = {
-            "Global Channel": ["Click & Mortar", "Discounters", "Drugstore / Pharmacy", "LAR", "Supermarket"],
-            "Local Channel": ["LAR", "Other OOH", "Traditional Convenience", "LAR", "Supermarket"],
-            "Retailer": ["Retailer A", "Retailer B", "Retailer C", "Retailer A", "Retailer B"],
-            "GSV MAT (Mn AUD)": [29.9, 29.9, 29.9, 29.9, 29.9],
-            "GSV TY vs LY %": [15.3, 15.3, 15.3, 15.3, 15.3],
-            "NSV MAT (Mn AUD)": [19.6, 19.6, 19.6, 19.6, 19.6],
-            "NSV TY vs LY %": [17.6, 17.6, 17.6, 17.6, 17.6],
-            "MAC % MAT": [42.4, 42.4, 42.4, 42.4, 42.4],
-            "MAC % TY vs LY %": [-0.0, -0.0, 0.0, 0.01, -0.1],
-            "Contribution % MAT": [22.6, 36.2, 22.6, 22.6, 22.6],
-            "Contribution % TY vs LY %": [-3.7, 0.0, 0.0, 0.0, 0.0],
-            "Status": ["low", "medium", "medium", "high", "low"]
-        }
+        # Load data safely
+        file_path = r"C:\Users\aditya.kumar\mars_proj\Self-Service-Tool\SCM Self Service Scorecard data.xlsx"
         
-        df = pd.DataFrame(data)
-        
-        # Apply Filters
-        if global_channel != "All":
-            df = df[df["Global Channel"] == global_channel]
-        if local_channel != "All":
-            df = df[df["Local Channel"] == local_channel]
-        if retailer != "All":
-            df = df[df["Retailer"] == retailer]
-        
-        def get_status_color(status):
-            if status == "low":
-                return '<span class="status-indicator low"></span>'
-            elif status == "medium":
-                return '<span class="status-indicator medium"></span>'
-            elif status == "high":
-                return '<span class="status-indicator high"></span>'
-            return ''
-        
-        df["Status"] = df["Status"].apply(get_status_color)
-        
-        st.markdown(df.to_html(escape=False, index=False, classes='styled-table'), unsafe_allow_html=True)
+        if os.path.exists(file_path):
+            df = pd.read_excel(file_path, sheet_name="Local Channel")
+            
+            # Ensure column names are properly formatted
+            df.columns = df.columns.str.strip()
+
+            # Apply Filters only if the column exists
+            if "Global Channel" in df.columns and global_channel != "All":
+                df = df[df["Global Channel"].str.strip() == global_channel]
+            if "Local Channel" in df.columns and local_channel != "All":
+                df = df[df["Local Channel"].str.strip() == local_channel]
+            if "Retailer" in df.columns and retailer != "All":
+                df = df[df["Retailer"].str.strip() == retailer]
+            
+            # Function to apply status colors
+            def get_status_color(status):
+                if status == "low":
+                    return '<span class="status-indicator low"></span>'
+                elif status == "medium":
+                    return '<span class="status-indicator medium"></span>'
+                elif status == "high":
+                    return '<span class="status-indicator high"></span>'
+                return ''
+            
+            if "Status" in df.columns:
+                df["Status"] = df["Status"].apply(get_status_color)
+            
+            st.markdown(df.to_html(escape=False, index=False, classes='styled-table'), unsafe_allow_html=True)
+        else:
+            st.error(f"⚠ Data file not found: {file_path}")
     
     with tab3:
         st.markdown("### Retailer Data")
