@@ -1,15 +1,21 @@
 import streamlit as st
+import os
 from components.login import render_login
 from components.header import render_header
 from components.dashboard import render_dashboard
 from components.sidebar import render_sidebar
 from components.manage_data import render_manage_data  # Importing the new page
+from components.data_overview import render_data_overview  # Importing Data Overview page
 from utils.session import initialize_session_state
 from utils.styles import load_css
 from utils.auth import init_auth
 
 # Set page config
 st.set_page_config(layout="wide", page_title="SCM Scorecard")
+
+# Ensure session state is properly initialized
+if 'current_page' not in st.session_state:
+    st.session_state.current_page = 'home'
 
 # Initialize session state
 initialize_session_state()
@@ -43,10 +49,9 @@ current_page = st.session_state.get('current_page', 'home')
 if current_page == 'home':
     render_dashboard()
 elif current_page == 'manage-data':
-    render_manage_data()  # Calls the newly created function to display the Manage Data page
+    render_manage_data()
 elif current_page == 'data-overview':
-    st.title("Data Overview")
-    st.write("Data overview and analytics will be implemented here")
+    render_data_overview()
 elif current_page == 'create-placement':
     st.title("Create Placement")
     st.write("Placement creation interface will be implemented here")
@@ -56,3 +61,11 @@ elif current_page == 'saved-placements':
 elif current_page == 'scm-scorecard':
     st.title("SCM Scorecard")
     st.write("SCM scorecard interface will be implemented here")
+
+# Fix sidebar navigation issue
+def handle_navigation():
+    if st.sidebar.button("📊 Data Overview", key="sidebar_data_overview"):
+        st.session_state.current_page = "data-overview"
+        st.rerun()
+
+handle_navigation()

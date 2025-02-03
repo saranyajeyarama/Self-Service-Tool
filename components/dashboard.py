@@ -10,7 +10,6 @@ def render_welcome_section():
     """, unsafe_allow_html=True)
 
 def render_manage_data_card():
-    # Updated: Now, clicking "+ Manage Data" updates session state and redirects
     st.markdown("""
     <div class="card">
         <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -31,7 +30,7 @@ def render_action_cards():
     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin: 2rem 0;">
         <div class="card" style="text-align: center;">
             <div class="icon-circle">📈</div>
-            <h4 style="color: #0000A0;"><a href="?page=data-overview">Data Overview →</a></h4>
+            <h4 style="color: #0000A0;"><a href="?page=data-overview" onclick="setSessionState('current_page', 'data-overview')">Data Overview →</a></h4>
         </div>
         <div class="card" style="text-align: center;">
             <div class="icon-circle">🎯</div>
