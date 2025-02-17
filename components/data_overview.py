@@ -2,6 +2,18 @@ import streamlit as st
 import pandas as pd
 import os
 
+def apply_indicator_html(value):
+    try:
+        value = float(value)  # Convert to float to handle numeric comparisons
+        if value <= 1:
+            return f'<span>{value}</span> <span class="status-indicator low"></span>'
+        elif value == 2:
+            return f'<span>{value}</span> <span class="status-indicator medium"></span>'
+        else:
+            return f'<span>{value}</span> <span class="status-indicator high"></span>'
+    except ValueError:
+        return value  # Return original if conversion fails
+
 def render_data_overview():
     st.markdown("""
     <style>
@@ -44,37 +56,15 @@ def render_data_overview():
         .low { background-color: red; }
         .medium { background-color: orange; }
         .high { background-color: green; }
-        .dropdown-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .styled-table {
-            border-collapse: collapse;
-            width: 100%;
-            border: 1px solid #ddd;
-        }
-        .styled-table th, .styled-table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .styled-table th {
-            background-color: #0033A0;
-            color: white;
-            text-align: center;
-        }
     </style>
     """, unsafe_allow_html=True)
     
-    # Header Section
     st.markdown("""
     <div class='header-container'>
         <div class='overview-header'>Data Overview</div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Currency and Legend Section
     st.markdown("""
     <div class='info-legend-container'>
         <div class='currency-info'>
@@ -88,7 +78,6 @@ def render_data_overview():
     </div>
     """, unsafe_allow_html=True)
     
-    # Tabs for different views
     tab1, tab2, tab3 = st.tabs(["Global channel", "Local channel", "Retailer"])
     
     file_path = r"C:\\Users\\aditya.kumar\\mars_proj\\Self-Service-Tool\\SCM Self Service Scorecard data.xlsx"
@@ -96,17 +85,17 @@ def render_data_overview():
     with tab1:
         st.markdown("### Global Channel Data")
         
-        col1 = st.columns(1)
-        with col1[0]:
-            global_channel = st.selectbox("Global channel", ["All", "Click & Mortar", "Discounters", "Supermarket", "Multiple Convenience", "Other OOH", "LAR", "Traditional Independent", "Drugstore / Pharmacy", "Other Specialist", "ODD", "Pure-Play", "Unattended Retail"])
-        
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            global_channel = st.selectbox("Global channel", ["All", "Click & Mortar", "Discounters", "Supermarket", "Multiple Convenience", "Other OOH", "LAR", "Traditional Independent", "Drugstore / Pharmacy", "Other Specialist", "ODD", "Pure-Play", "Unattended Retail"], key='global_channel')
+        with col2:
+            local_channel = st.selectbox("Local channel", ["All", "LAR", "Other OOH", "Traditional Convenience", "Wholesale", "Mass", "Vending", "Corporate P&C", "LARS", "Grocery", "Pureplay", "Pharmacy", "Cinema", "Unstructured P&C", "Click&Mortar", "Discounters", "ODD", "Food Service"], key='local_channel')
+        with col3:
+            retailer = st.selectbox("Retailer", ["All", "Retailer A", "Retailer B", "Retailer C"], key='retailer')
+    
         if os.path.exists(file_path):
             df_global = pd.read_excel(file_path, sheet_name="Global Channel")
             df_global.columns = df_global.columns.str.strip()
-            
-            if "Global Channel" in df_global.columns and global_channel != "All":
-                df_global = df_global[df_global["Global Channel"].str.strip() == global_channel]
-            
             st.dataframe(df_global)
         else:
             st.error(f"⚠ Data file not found: {file_path}")
