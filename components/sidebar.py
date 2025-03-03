@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 
 def render_sidebar():
     with st.sidebar:
@@ -8,20 +9,20 @@ def render_sidebar():
             <h3 style='color: #666; font-size: 14px; margin-bottom: 0.5rem;'>SELECTED MARKET</h3>
         </div>
         """, unsafe_allow_html=True)
-        
+
         selected_market = st.selectbox(
             "",
             ["🇨🇳 China", "🇺🇸 U.S.", "🇦🇪 U.A.E", "🇫🇷 France"],
             label_visibility="collapsed"
         )
-        
+
         st.markdown("<hr style='margin: 2rem 0;'>", unsafe_allow_html=True)
-        
+
         # Navigation
         st.markdown("""
         <h3 style='color: #666; font-size: 14px; margin-bottom: 1rem;'>NAVIGATION</h3>
         """, unsafe_allow_html=True)
-        
+
         # Custom CSS for navigation
         st.markdown("""
         <style>
@@ -52,7 +53,7 @@ def render_sidebar():
             }
         </style>
         """, unsafe_allow_html=True)
-        
+
         # Navigation items
         nav_items = [
             ("🏠 Home", "home"),
@@ -63,7 +64,7 @@ def render_sidebar():
             ("🔄 Compare Placement", "compare-placement"),
             ("📑 SCM Scorecard", "scm-scorecard")
         ]
-        
+
         for label, key in nav_items:
             active = st.session_state.get('current_page', 'home') == key
             if st.button(
@@ -74,6 +75,14 @@ def render_sidebar():
             ):
                 st.session_state.current_page = key
                 st.rerun()
-            
+
         # Add some spacing at the bottom
         st.markdown("<div style='flex-grow: 1;'></div>", unsafe_allow_html=True)
+
+        # ✅ Ensure image path is correct
+        image_path = os.path.join("assets", "image.png")
+
+        try:
+            st.image(image_path, width=200)  # Load image if exists
+        except Exception as e:
+            st.warning(f"Error loading image: {e}")  # Display warning if missing
